@@ -10,16 +10,66 @@ max_ending_here = max(элемент, max_ending_here + элемент)
 max_so_far = max(max_so_far, max_ending_here)
 По окончании возвращаем max_so_far.
 
-Псевдокод:
+using System;
 
-text
-function maxSubarraySum(arr):
-    max_ending_here = arr[0]
-    max_so_far = arr[0]
-    for i from 1 to len(arr)-1:
-        max_ending_here = max(arr[i], max_ending_here + arr[i])
-        max_so_far = max(max_so_far, max_ending_here)
-    return max_so_far
+public class MaxSubarraySum
+{
+    public static int FindMaxSum(int[] arr)
+    {
+        if (arr == null || arr.Length == 0)
+            throw new ArgumentException("Массив не может быть пустым");
+        
+        int maxEndingHere = arr[0]; 
+        int maxSoFar = arr[0];     
+        
+        for (int i = 1; i < arr.Length; i++)
+        {
+
+            maxEndingHere = Math.Max(arr[i], maxEndingHere + arr[i]);
+            
+
+            maxSoFar = Math.Max(maxSoFar, maxEndingHere);
+        }
+        
+        return maxSoFar;
+    }
+    
+
+    public static (int sum, int[] subarray) FindMaxSubarray(int[] arr)
+    {
+        if (arr == null || arr.Length == 0)
+            throw new ArgumentException("Массив не может быть пустым");
+        
+        int maxEndingHere = arr[0];
+        int maxSoFar = arr[0];
+        int start = 0, end = 0, tempStart = 0;
+        
+        for (int i = 1; i < arr.Length; i++)
+        {
+            if (arr[i] > maxEndingHere + arr[i])
+            {
+                maxEndingHere = arr[i];
+                tempStart = i;
+            }
+            else
+            {
+                maxEndingHere = maxEndingHere + arr[i];
+            }
+            
+            if (maxEndingHere > maxSoFar)
+            {
+                maxSoFar = maxEndingHere;
+                start = tempStart;
+                end = i;
+            }
+        }
+
+        int[] result = new int[end - start + 1];
+        Array.Copy(arr, start, result, 0, result.Length);
+        
+        return (maxSoFar, result);
+    }
+}
 Оценка сложности:
 
 Временная сложность: O(n), где n — размер массива, так как выполняется один проход.
@@ -36,29 +86,58 @@ function maxSubarraySum(arr):
 Решение:
 Сортируем массив (это необходимо для использования метода двух указателей). Затем фиксируем один элемент (для i от 0 до n-3) и ищем два других с помощью двух указателей (left и right) в оставшейся части массива. Чтобы избежать дубликатов, пропускаем одинаковые элементы.
 
-Псевдокод:
+using System;
+using System.Collections.Generic;
 
-text
-function threeSum(arr):
-    sort(arr)
-    result = []
-    for i from 0 to len(arr)-3:
-        if i > 0 and arr[i] == arr[i-1]: continue
-        left = i+1
-        right = len(arr)-1
-        while left < right:
-            sum = arr[i] + arr[left] + arr[right]
-            if sum == 0:
-                result.append([arr[i], arr[left], arr[right]])
-                left++
-                while left < right and arr[left] == arr[left-1]: left++
-                right--
-                while left < right and arr[right] == arr[right+1]: right--
-            else if sum < 0:
-                left++
-            else:
-                right--
-    return result
+public class ThreeSumSolver
+{
+    public static IList<IList<int>> FindThreeSum(int[] nums)
+    {
+        List<IList<int>> result = new List<IList<int>>();
+        
+        if (nums == null || nums.Length < 3)
+            return result;
+        
+        Array.Sort(nums);
+        
+        for (int i = 0; i < nums.Length - 2; i++)
+        {
+            if (i > 0 && nums[i] == nums[i - 1])
+                continue;
+            
+            int left = i + 1;
+            int right = nums.Length - 1;
+            
+            while (left < right)
+            {
+                int sum = nums[i] + nums[left] + nums[right];
+                
+                if (sum == 0)
+                {
+                    result.Add(new List<int> { nums[i], nums[left], nums[right] });
+                    
+                    int leftValue = nums[left];
+                    while (left < right && nums[left] == leftValue)
+                        left++;
+                    
+                    int rightValue = nums[right];
+                    while (left < right && nums[right] == rightValue)
+                        right--;
+                }
+                else if (sum < 0)
+                {
+                    left++;
+                }
+                else
+                {
+                    right--;
+                }
+            }
+        }
+        
+        return result;
+    }
+}
 Оценка сложности:
 
 Сортировка занимает O(n log n).
@@ -72,3 +151,18 @@ function threeSum(arr):
 Обоснование:
 После сортировки метод двух указателей позволяет для каждого фиксированного элемента i просмотреть оставшуюся часть массива за линейное время O(n). Так как внешний цикл выполняется O(n) раз, получаем O(n^2). Пропуск дубликатов не меняет асимптотику. Оценка требует анализа вложенных циклов и учета сортировки.
 
+Краткое описание решений:
+
+Задача 1 (Алгоритм Кадане)
+Временная сложность: O(n) - один проход по массиву
+
+Пространственная сложность: O(1) - только несколько переменных
+
+Особенность: Работает даже с отрицательными числами
+
+Задача 2 (3Sum)
+Временная сложность: O(n²) - сортировка O(n log n) + два указателя O(n²)
+
+Пространственная сложность: O(1) дополнительно (без учета результата)
+
+Особенность: Использует сортировку и метод двух указателей для эффективного поиска
