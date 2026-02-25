@@ -7,11 +7,11 @@ List<int> nums = new List<int>();
 string[] s = Console.ReadLine().Split(' ');
 for (int i = 0; i < s.Length; i++) nums.Add(int.Parse(s[i]));
 
-// Кастомная сортировка через сравнение комбинаций
 var sorted = nums
     .Select(x => x.ToString())
     .OrderBy(x => x, Comparer<string>.Create((a, b) => (b + a).CompareTo(a + b)))
     .ToList();
 
 string finAns = string.Concat(sorted);
+
 Console.WriteLine(finAns);
